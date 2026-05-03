@@ -1,0 +1,1410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Script Architect — Award Film Script Generator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Syne:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --gold: #BF953F;
+  --gold-light: #FCF6BA;
+  --gold-mid: #D4AF5A;
+  --gold-dark: #8B6914;
+  --gold-subtle: rgba(191,149,63,0.1);
+  --black: #0A0A0A;
+  --ink: #1A1916;
+  --ink-soft: #3D3A30;
+  --ink-muted: #7A7568;
+  --parchment: #FAF8F3;
+  --cream: #F5F1E8;
+  --cream-dark: #EDE8DC;
+  --white: #FFFFFF;
+  --border: rgba(191,149,63,0.2);
+  --border-light: rgba(191,149,63,0.12);
+  --success: #3B6D11;
+  --success-bg: #EAF3DE;
+  --error-bg: #FCEBEB;
+  --error: #A32D2D;
+  --radius: 8px;
+  --radius-lg: 14px;
+  --shadow: 0 2px 20px rgba(10,10,10,0.08);
+  --shadow-lg: 0 8px 48px rgba(10,10,10,0.14);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Syne', sans-serif;
+  background: var(--parchment);
+  color: var(--ink);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ─── GRAIN OVERLAY ─── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.5;
+}
+
+/* ─── HEADER ─── */
+.site-header {
+  position: relative;
+  background: var(--black);
+  padding: 0;
+  overflow: hidden;
+  min-height: 260px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.header-pattern {
+  position: absolute;
+  inset: 0;
+  background-image:
+    repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(191,149,63,0.08) 39px, rgba(191,149,63,0.08) 40px),
+    repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(191,149,63,0.08) 39px, rgba(191,149,63,0.08) 40px);
+  pointer-events: none;
+}
+
+.header-glow {
+  position: absolute;
+  top: -80px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  height: 300px;
+  background: radial-gradient(ellipse, rgba(191,149,63,0.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.header-inner {
+  position: relative;
+  z-index: 1;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 3.5rem 2rem 3rem;
+  text-align: center;
+}
+
+.header-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(191,149,63,0.12);
+  border: 0.5px solid rgba(191,149,63,0.4);
+  border-radius: 40px;
+  padding: 5px 14px;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gold-mid);
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}
+
+.header-badge .dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--gold);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.8); }
+}
+
+.site-header h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(42px, 7vw, 72px);
+  font-weight: 300;
+  color: var(--white);
+  letter-spacing: -0.01em;
+  line-height: 1.05;
+  margin-bottom: 0.75rem;
+}
+
+.site-header h1 em {
+  font-style: italic;
+  color: var(--gold-mid);
+}
+
+.site-header .tagline {
+  font-size: 15px;
+  color: rgba(255,255,255,0.45);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.header-rule {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, var(--gold) 30%, var(--gold) 70%, transparent 100%);
+  opacity: 0.4;
+}
+
+/* ─── AWARDS STRIP ─── */
+.awards-strip {
+  background: var(--cream);
+  border-bottom: 1px solid var(--border-light);
+  padding: 10px 2rem;
+  overflow: hidden;
+  position: relative;
+}
+
+.awards-scroll {
+  display: flex;
+  gap: 32px;
+  animation: scroll-x 30s linear infinite;
+  width: max-content;
+}
+
+.awards-scroll span {
+  font-size: 11px;
+  color: var(--ink-muted);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 600;
+  white-space: nowrap;
+  padding: 2px 0;
+}
+
+.awards-scroll span.gold { color: var(--gold-dark); }
+
+@keyframes scroll-x {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* ─── MAIN LAYOUT ─── */
+.main-container {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem 5rem;
+  position: relative;
+  z-index: 1;
+}
+
+/* ─── STEP INDICATOR ─── */
+.step-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-bottom: 2.5rem;
+  background: var(--cream);
+  border: 1px solid var(--border);
+  border-radius: 40px;
+  padding: 6px;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.step-dot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  border-radius: 40px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-muted);
+  letter-spacing: 0.04em;
+  transition: all 0.3s;
+}
+
+.step-dot.active {
+  background: var(--black);
+  color: var(--white);
+}
+
+.step-dot.active .step-num { color: var(--gold); }
+
+.step-dot.done { color: var(--gold-dark); }
+.step-num { font-family: 'Cormorant Garamond', serif; font-size: 16px; }
+
+/* ─── CARDS ─── */
+.form-card {
+  background: var(--white);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  margin-bottom: 1.25rem;
+  box-shadow: var(--shadow);
+  transition: box-shadow 0.2s;
+}
+
+.form-card:hover { box-shadow: var(--shadow-lg); }
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.card-num {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--black);
+  color: var(--gold);
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.card-title {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.card-sub { font-size: 12px; color: var(--ink-muted); font-weight: 400; margin-top: 1px; }
+
+/* ─── FORM FIELDS ─── */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+.grid-1 { display: grid; grid-template-columns: 1fr; gap: 12px; }
+
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.field input, .field select, .field textarea {
+  background: var(--parchment);
+  border: 1px solid var(--cream-dark);
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  font-size: 14px;
+  font-family: 'Syne', sans-serif;
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.2s, background 0.2s;
+  width: 100%;
+}
+
+.field input::placeholder, .field textarea::placeholder { color: var(--ink-muted); opacity: 0.6; }
+
+.field input:focus, .field select:focus, .field textarea:focus {
+  border-color: var(--gold);
+  background: var(--white);
+}
+
+.field textarea { resize: vertical; min-height: 80px; line-height: 1.6; }
+.field select { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237A7568' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; }
+
+/* ─── REGION PILLS ─── */
+.pill-group { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 2px; }
+
+.pill {
+  padding: 7px 16px;
+  border-radius: 40px;
+  border: 1px solid var(--cream-dark);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s;
+  background: var(--parchment);
+  color: var(--ink-muted);
+  user-select: none;
+  letter-spacing: 0.04em;
+}
+
+.pill:hover { border-color: var(--gold); color: var(--gold-dark); }
+.pill.active { background: var(--black); border-color: var(--black); color: var(--gold); }
+
+/* ─── UPLOAD ZONE ─── */
+.upload-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.upload-item {
+  position: relative;
+  background: var(--parchment);
+  border: 1px dashed var(--cream-dark);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  overflow: hidden;
+}
+
+.upload-item:hover { border-color: var(--gold); border-style: solid; background: var(--gold-subtle); }
+
+.upload-item.has-file {
+  border-style: solid;
+  border-color: #7DC96C;
+  background: #F0FAE8;
+}
+
+.upload-item input[type=file] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+}
+
+.upload-icon { font-size: 18px; margin-bottom: 6px; display: block; }
+.upload-title { font-size: 13px; font-weight: 700; color: var(--ink); }
+.upload-sub { font-size: 11px; color: var(--ink-muted); margin-top: 3px; }
+.upload-item.has-file .upload-title { color: var(--success); }
+.upload-item.has-file .upload-sub { color: #5A9A4A; }
+
+/* ─── API KEY SECTION ─── */
+.api-section {
+  background: var(--black);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem 2rem;
+  margin-bottom: 1.25rem;
+  border: 1px solid rgba(191,149,63,0.3);
+}
+
+.api-section .card-header { border-color: rgba(191,149,63,0.2); }
+.api-section .card-title { color: var(--white); }
+.api-section .card-sub { color: rgba(255,255,255,0.4); }
+.api-section label { color: rgba(255,255,255,0.5); }
+
+.api-section input {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(191,149,63,0.25);
+  color: var(--white);
+  font-family: 'Courier New', monospace;
+  letter-spacing: 0.04em;
+}
+
+.api-section input::placeholder { color: rgba(255,255,255,0.25); }
+.api-section input:focus { border-color: var(--gold); background: rgba(255,255,255,0.09); }
+
+.api-note {
+  font-size: 11px;
+  color: rgba(255,255,255,0.35);
+  margin-top: 8px;
+  line-height: 1.5;
+}
+
+.api-note a { color: var(--gold-mid); text-decoration: none; }
+.api-note a:hover { text-decoration: underline; }
+
+/* ─── GENERATE BUTTON ─── */
+.generate-btn {
+  width: 100%;
+  background: linear-gradient(135deg, var(--gold-dark) 0%, var(--gold) 50%, var(--gold-mid) 100%);
+  color: var(--black);
+  border: none;
+  border-radius: var(--radius-lg);
+  padding: 18px;
+  font-size: 16px;
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  position: relative;
+  overflow: hidden;
+}
+
+.generate-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0);
+  transition: background 0.2s;
+}
+
+.generate-btn:hover::before { background: rgba(255,255,255,0.15); }
+.generate-btn:active { transform: scale(0.99); }
+.generate-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-ornament { font-size: 18px; opacity: 0.7; }
+
+/* ─── LOADING ─── */
+.loading-screen {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(10,10,10,0.92);
+  z-index: 1000;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+}
+
+.loading-screen.active { display: flex; }
+
+.loading-inner { text-align: center; padding: 2rem; max-width: 420px; }
+
+.loading-logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 48px;
+  color: var(--gold);
+  font-style: italic;
+  margin-bottom: 2rem;
+  opacity: 0.9;
+}
+
+.loading-ring {
+  width: 64px;
+  height: 64px;
+  border: 1.5px solid rgba(191,149,63,0.2);
+  border-top-color: var(--gold);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1.5rem;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.loading-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 24px;
+  color: var(--white);
+  margin-bottom: 0.5rem;
+  font-weight: 300;
+}
+
+.loading-step {
+  font-size: 13px;
+  color: var(--gold-mid);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  min-height: 20px;
+  transition: opacity 0.3s;
+}
+
+.loading-progress {
+  margin-top: 2rem;
+  height: 1px;
+  background: rgba(191,149,63,0.15);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.loading-bar {
+  height: 100%;
+  background: var(--gold);
+  width: 0%;
+  transition: width 0.5s ease;
+}
+
+/* ─── OUTPUT ─── */
+.output-section { display: none; }
+.output-section.active { display: block; }
+
+.output-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-light);
+  flex-wrap: wrap;
+}
+
+.output-header-left h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 32px;
+  font-weight: 400;
+  color: var(--ink);
+  line-height: 1.2;
+  margin-bottom: 0.5rem;
+}
+
+.meta-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.meta-tag {
+  display: inline-flex;
+  align-items: center;
+  background: var(--cream);
+  border: 1px solid var(--border-light);
+  border-radius: 40px;
+  padding: 3px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--ink-soft);
+  text-transform: uppercase;
+}
+
+.output-actions { display: flex; gap: 8px; flex-shrink: 0; }
+
+.btn-outline {
+  padding: 9px 18px;
+  border: 1px solid var(--cream-dark);
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  background: var(--white);
+  color: var(--ink-soft);
+  font-family: 'Syne', sans-serif;
+  transition: all 0.15s;
+  letter-spacing: 0.02em;
+}
+
+.btn-outline:hover { border-color: var(--gold); color: var(--gold-dark); }
+
+.btn-dark {
+  padding: 9px 18px;
+  border: 1px solid var(--black);
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  background: var(--black);
+  color: var(--gold);
+  font-family: 'Syne', sans-serif;
+  transition: all 0.15s;
+  letter-spacing: 0.02em;
+}
+
+.btn-dark:hover { background: var(--ink-soft); }
+
+/* ─── SCRIPT BLOCKS ─── */
+.script-block { margin-bottom: 1.5rem; border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--border-light); box-shadow: var(--shadow); }
+
+.script-block-header {
+  background: var(--black);
+  padding: 10px 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.block-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px;
+  font-style: italic;
+  color: var(--gold);
+  line-height: 1;
+  min-width: 24px;
+}
+
+.block-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.85);
+}
+
+.script-table { width: 100%; border-collapse: collapse; }
+
+.script-table thead th {
+  background: var(--cream);
+  padding: 8px 18px;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 700;
+  color: var(--ink-muted);
+  text-align: left;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.script-table thead th:first-child { border-right: 1px solid var(--border-light); width: 55%; }
+
+.script-table tbody td {
+  padding: 18px;
+  font-size: 14px;
+  line-height: 1.75;
+  vertical-align: top;
+  background: var(--white);
+}
+
+.script-table tbody td:first-child {
+  border-right: 1px solid var(--border-light);
+  color: var(--ink);
+  font-family: 'Syne', sans-serif;
+  font-weight: 400;
+}
+
+.script-table tbody td.tos-cell {
+  background: var(--parchment);
+}
+
+.tos-line {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink-soft);
+  padding: 4px 0;
+  line-height: 1.5;
+  letter-spacing: 0.01em;
+  border-bottom: 1px solid rgba(191,149,63,0.1);
+}
+
+.tos-line:last-child { border-bottom: none; }
+
+.visual-cue {
+  background: #FAEEDA;
+  border-top: 1px solid rgba(191,149,63,0.2);
+  padding: 8px 18px;
+  font-size: 12px;
+  color: #854F0B;
+  font-style: italic;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.visual-cue::before { content: '⬡'; font-style: normal; font-size: 10px; color: var(--gold); }
+
+/* ─── ERROR ─── */
+.error-toast {
+  display: none;
+  background: var(--error-bg);
+  border: 1px solid #F09595;
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  font-size: 13px;
+  color: var(--error);
+  margin-top: 1rem;
+  line-height: 1.5;
+}
+.error-toast.active { display: block; }
+
+/* ─── FOOTER ─── */
+.site-footer {
+  background: var(--black);
+  padding: 2rem;
+  text-align: center;
+  margin-top: 0;
+}
+
+.site-footer p {
+  font-size: 12px;
+  color: rgba(255,255,255,0.2);
+  letter-spacing: 0.06em;
+}
+
+.site-footer span { color: var(--gold); }
+
+/* ─── DIVIDER ORNAMENT ─── */
+.ornament-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0.5rem 0 2rem;
+}
+.ornament-divider::before, .ornament-divider::after { content: ''; flex: 1; height: 1px; background: var(--border-light); }
+.ornament-center { color: var(--gold); font-size: 14px; }
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 640px) {
+  .grid-2, .grid-3, .upload-grid { grid-template-columns: 1fr; }
+  .site-header h1 { font-size: 36px; }
+  .output-header { flex-direction: column; }
+  .output-actions { width: 100%; }
+  .btn-outline, .btn-dark { flex: 1; text-align: center; }
+  .script-table, .script-table thead, .script-table tbody, .script-table tr, .script-table td, .script-table th { display: block; }
+  .script-table thead th:first-child { border-right: none; width: 100%; }
+  .script-table tbody td:first-child { border-right: none; border-bottom: 1px solid var(--border-light); }
+  .main-container { padding: 2rem 1rem 4rem; }
+}
+
+/* ─── PRINT / COPY STYLES ─── */
+@media print {
+  .site-header, .awards-strip, .step-indicator, .form-card, .api-section, .generate-btn, .output-actions, .btn-outline, .btn-dark, .site-footer { display: none !important; }
+  .output-section { display: block !important; }
+  .script-block { break-inside: avoid; border: 1px solid #ccc; margin-bottom: 1rem; }
+  body { background: white; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="site-header">
+  <div class="header-pattern"></div>
+  <div class="header-glow"></div>
+  <div class="header-inner">
+    <div class="header-badge">
+      <div class="dot"></div>
+      Award Intelligence Platform
+    </div>
+    <h1>Script <em>Architect</em></h1>
+    <p class="tagline">Generate award-ready case film scripts in VO + TOS format from your campaign documents</p>
+  </div>
+  <div class="header-rule"></div>
+</header>
+
+<!-- SCROLLING AWARDS STRIP -->
+<div class="awards-strip">
+  <div class="awards-scroll">
+    <span class="gold">Cannes Lions</span><span>·</span>
+    <span>DRUM Awards</span><span>·</span>
+    <span class="gold">MENA Effie</span><span>·</span>
+    <span>Dubai Lynx</span><span>·</span>
+    <span class="gold">Spikes Asia</span><span>·</span>
+    <span>APAC Effie</span><span>·</span>
+    <span class="gold">Festival of Media</span><span>·</span>
+    <span>Campaign Asia</span><span>·</span>
+    <span class="gold">MMA Smarties</span><span>·</span>
+    <span>One Show</span><span>·</span>
+    <span class="gold">Cannes Lions</span><span>·</span>
+    <span>DRUM Awards</span><span>·</span>
+    <span class="gold">MENA Effie</span><span>·</span>
+    <span>Dubai Lynx</span><span>·</span>
+    <span class="gold">Spikes Asia</span><span>·</span>
+    <span>APAC Effie</span><span>·</span>
+    <span class="gold">Festival of Media</span><span>·</span>
+    <span>Campaign Asia</span><span>·</span>
+    <span class="gold">MMA Smarties</span><span>·</span>
+    <span>One Show</span><span>·</span>
+  </div>
+</div>
+
+<!-- LOADING OVERLAY -->
+<div class="loading-screen" id="loadingScreen">
+  <div class="loading-inner">
+    <div class="loading-logo">SA</div>
+    <div class="loading-ring"></div>
+    <div class="loading-title">Crafting Your Script</div>
+    <div class="loading-step" id="loadingStep">Initializing...</div>
+    <div class="loading-progress">
+      <div class="loading-bar" id="loadingBar"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<main class="main-container">
+
+  <!-- STEP INDICATOR -->
+  <div class="step-indicator" id="stepIndicator">
+    <div class="step-dot active" id="step1"><span class="step-num">1</span> Fill Details</div>
+    <div class="step-dot" id="step2"><span class="step-num">2</span> Upload Docs</div>
+    <div class="step-dot" id="step3"><span class="step-num">3</span> Generate</div>
+    <div class="step-dot" id="step4"><span class="step-num">4</span> Your Script</div>
+  </div>
+
+  <!-- FORM VIEW -->
+  <div id="formView">
+
+    <!-- API KEY -->
+    <div class="api-section">
+      <div class="card-header">
+        <div class="card-num" style="background: rgba(191,149,63,0.15); color: var(--gold);">⚿</div>
+        <div>
+          <div class="card-title" style="color:var(--white);">Anthropic API Key</div>
+          <div class="card-sub">Required to generate scripts. Your key never leaves your browser.</div>
+        </div>
+      </div>
+      <div class="field">
+        <label>API Key</label>
+        <input type="password" id="apiKey" placeholder="sk-ant-api03-...">
+      </div>
+      <p class="api-note">
+        Get your API key at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a>.
+        This key is used only in your browser session and is never stored or transmitted to any server other than Anthropic.
+      </p>
+    </div>
+
+    <!-- CAMPAIGN DETAILS -->
+    <div class="form-card">
+      <div class="card-header">
+        <div class="card-num">1</div>
+        <div>
+          <div class="card-title">Campaign Details</div>
+          <div class="card-sub">Basic information about the campaign</div>
+        </div>
+      </div>
+      <div class="grid-2" style="margin-bottom:14px;">
+        <div class="field">
+          <label>Brand *</label>
+          <input type="text" id="brand" placeholder="e.g. Coca-Cola, Samsung">
+        </div>
+        <div class="field">
+          <label>Campaign Name *</label>
+          <input type="text" id="campaign" placeholder="e.g. Real Magic, Open Always Wins">
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="field">
+          <label>Market / Region</label>
+          <input type="text" id="market" placeholder="e.g. UAE, Southeast Asia, India">
+        </div>
+        <div class="field">
+          <label>Timeline</label>
+          <input type="text" id="timeline" placeholder="e.g. Q1 2024, Jan–Mar 2024">
+        </div>
+      </div>
+    </div>
+
+    <!-- AWARD DETAILS -->
+    <div class="form-card">
+      <div class="card-header">
+        <div class="card-num">2</div>
+        <div>
+          <div class="card-title">Award Details</div>
+          <div class="card-sub">The script will be tailored for this award and category</div>
+        </div>
+      </div>
+      <div class="grid-2" style="margin-bottom:14px;">
+        <div class="field">
+          <label>Award Name</label>
+          <select id="awardName">
+            <option value="">Select award...</option>
+            <option>DRUM Awards</option>
+            <option>MENA Effie Awards</option>
+            <option>APAC Effie Awards</option>
+            <option>Cannes Lions</option>
+            <option>Dubai Lynx</option>
+            <option>Spikes Asia</option>
+            <option>Festival of Media APAC</option>
+            <option>Festival of Media MENA</option>
+            <option>Campaign Asia Awards</option>
+            <option>MMA Smarties</option>
+            <option>One Show</option>
+            <option>The Webby Awards</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Category</label>
+          <input type="text" id="category" placeholder="e.g. Best Use of AI, CTV, Performance">
+        </div>
+      </div>
+      <div class="field">
+        <label>Award Region</label>
+        <div class="pill-group" id="regionPills">
+          <div class="pill active" data-val="APAC">APAC</div>
+          <div class="pill" data-val="MENA">MENA</div>
+          <div class="pill" data-val="Global">Global</div>
+          <div class="pill" data-val="EMEA">EMEA</div>
+          <div class="pill" data-val="North America">North America</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DOCUMENT UPLOADS -->
+    <div class="form-card">
+      <div class="card-header">
+        <div class="card-num">3</div>
+        <div>
+          <div class="card-title">Campaign Documents</div>
+          <div class="card-sub">Upload reports or paste context below — the more data, the richer the script</div>
+        </div>
+      </div>
+      <div class="upload-grid">
+        <div class="upload-item" id="up-golive">
+          <input type="file" accept=".pdf,.doc,.docx,.txt,.pptx,.csv" onchange="handleFile(this,'golive')">
+          <span class="upload-icon">📊</span>
+          <div class="upload-title">Go-Live Report</div>
+          <div class="upload-sub" id="golive-name">Click or drag to upload</div>
+        </div>
+        <div class="upload-item" id="up-biz">
+          <input type="file" accept=".pdf,.doc,.docx,.txt,.pptx,.csv" onchange="handleFile(this,'biz')">
+          <span class="upload-icon">💼</span>
+          <div class="upload-title">Business Report</div>
+          <div class="upload-sub" id="biz-name">Click or drag to upload</div>
+        </div>
+        <div class="upload-item" id="up-pca">
+          <input type="file" accept=".pdf,.doc,.docx,.txt,.pptx,.csv" onchange="handleFile(this,'pca')">
+          <span class="upload-icon">📈</span>
+          <div class="upload-title">Post-Campaign Analysis</div>
+          <div class="upload-sub" id="pca-name">Click or drag to upload</div>
+        </div>
+        <div class="upload-item" id="up-creative">
+          <input type="file" accept=".pdf,.doc,.docx,.txt,.pptx" onchange="handleFile(this,'creative')">
+          <span class="upload-icon">🎬</span>
+          <div class="upload-title">Creative Brief / Links</div>
+          <div class="upload-sub" id="creative-name">Click or drag to upload</div>
+        </div>
+      </div>
+      <div class="field" style="margin-top:14px;">
+        <label>Additional Context</label>
+        <textarea id="additionalContext" placeholder="Paste campaign results, key stats, URLs, performance metrics, creative rationale, or any other data here. The richer the context, the better the script.&#10;&#10;Example: CTR 4.2%, 3.2x ROAS, reach 8.5M, 40% brand recall lift, launched on YouTube + Meta + CTV, AI-optimised creative rotation..."></textarea>
+      </div>
+    </div>
+
+    <!-- CUSTOM INSTRUCTIONS -->
+    <div class="form-card">
+      <div class="card-header">
+        <div class="card-num">4</div>
+        <div>
+          <div class="card-title">Custom Instructions</div>
+          <div class="card-sub">Guide the tone, emphasis, and content of your script</div>
+        </div>
+      </div>
+      <div class="grid-1">
+        <div class="field">
+          <label>Must Include</label>
+          <textarea id="mustInclude" placeholder="e.g. Mention 40% brand recall lift, highlight the AI creative optimisation engine, include the CTV measurement breakthrough, reference the 3-phase strategy"></textarea>
+        </div>
+        <div class="field">
+          <label>Avoid Mentioning</label>
+          <textarea id="avoidMention" placeholder="e.g. Do not name competitor brands, avoid mentioning the agency partner, no reference to pricing or budget"></textarea>
+        </div>
+        <div class="field">
+          <label>Key Messaging Priorities</label>
+          <textarea id="keyMessages" placeholder="e.g. Lead with business outcomes before media metrics, make the human insight central to the narrative, emphasise first-to-market innovation angle"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="error-toast" id="errorToast"></div>
+
+    <button class="generate-btn" id="generateBtn" onclick="generateScript()">
+      <span class="btn-ornament">✦</span>
+      Generate Award Script
+      <span class="btn-ornament">✦</span>
+    </button>
+
+  </div>
+  <!-- /FORM VIEW -->
+
+  <!-- OUTPUT VIEW -->
+  <div class="output-section" id="outputSection">
+
+    <div class="output-header">
+      <div class="output-header-left">
+        <h2 id="outputTitle">Award Script</h2>
+        <div class="meta-tags" id="metaTags"></div>
+      </div>
+      <div class="output-actions">
+        <button class="btn-outline" onclick="resetForm()">← New Script</button>
+        <button class="btn-outline" onclick="copyScript()" id="copyBtn">Copy All</button>
+        <button class="btn-dark" onclick="printScript()">Print / PDF</button>
+      </div>
+    </div>
+
+    <div class="ornament-divider">
+      <div class="ornament-center">✦</div>
+    </div>
+
+    <div id="scriptOutput"></div>
+
+    <div style="margin-top:2rem; text-align:center;">
+      <button class="btn-outline" onclick="resetForm()" style="margin-right:8px;">← Generate Another</button>
+      <button class="btn-dark" onclick="copyScript()">Copy Full Script</button>
+    </div>
+
+  </div>
+  <!-- /OUTPUT VIEW -->
+
+</main>
+
+<!-- FOOTER -->
+<footer class="site-footer">
+  <p>Script <span>Architect</span> &nbsp;·&nbsp; Powered by Claude AI &nbsp;·&nbsp; Built for award-winning advertising teams</p>
+</footer>
+
+<script>
+const fileContents = {};
+let selectedRegion = 'APAC';
+
+// Region pill selection
+document.querySelectorAll('#regionPills .pill').forEach(p => {
+  p.addEventListener('click', () => {
+    document.querySelectorAll('#regionPills .pill').forEach(x => x.classList.remove('active'));
+    p.classList.add('active');
+    selectedRegion = p.dataset.val;
+  });
+});
+
+// Step updater
+function setStep(n) {
+  for (let i = 1; i <= 4; i++) {
+    const el = document.getElementById('step' + i);
+    el.classList.remove('active', 'done');
+    if (i < n) el.classList.add('done');
+    if (i === n) el.classList.add('active');
+  }
+}
+
+// File handler
+function handleFile(input, key) {
+  if (!input.files[0]) return;
+  const file = input.files[0];
+  const reader = new FileReader();
+  reader.onload = e => {
+    fileContents[key] = { name: file.name, content: e.target.result };
+    document.getElementById(key + '-name').textContent = '✓ ' + file.name;
+    document.getElementById('up-' + key).classList.add('has-file');
+  };
+  reader.onerror = () => {
+    fileContents[key] = { name: file.name, content: `[File: ${file.name} — binary/unreadable format. Please paste content in the Additional Context field.]` };
+    document.getElementById(key + '-name').textContent = '✓ ' + file.name + ' (use context field for best results)';
+    document.getElementById('up-' + key).classList.add('has-file');
+  };
+  try { reader.readAsText(file); } catch(e) { reader.onerror(); }
+}
+
+const loadingSteps = [
+  'Reading campaign documents...',
+  'Extracting campaign intelligence...',
+  'Mapping challenge to insight...',
+  'Identifying the core consumer truth...',
+  'Architecting script structure...',
+  'Calibrating for award category...',
+  'Adapting tone for region...',
+  'Writing voiceover narrative...',
+  'Crafting text-on-screen lines...',
+  'Final script polish...'
+];
+
+async function generateScript() {
+  const apiKey = document.getElementById('apiKey').value.trim();
+  const brand = document.getElementById('brand').value.trim();
+  const campaign = document.getElementById('campaign').value.trim();
+  const additionalContext = document.getElementById('additionalContext').value.trim();
+
+  if (!apiKey) { showError('Please enter your Anthropic API key to generate a script.'); return; }
+  if (!brand || !campaign) { showError('Please enter at least a Brand and Campaign Name to continue.'); return; }
+  if (Object.keys(fileContents).length === 0 && !additionalContext) {
+    showError('Please upload at least one document or paste campaign context — the AI needs data to write from.'); return;
+  }
+
+  hideError();
+  setStep(3);
+
+  // Show loading
+  const ls = document.getElementById('loadingScreen');
+  ls.classList.add('active');
+
+  let stepIdx = 0;
+  let progress = 5;
+  document.getElementById('loadingStep').textContent = loadingSteps[0];
+  document.getElementById('loadingBar').style.width = progress + '%';
+
+  const stepInterval = setInterval(() => {
+    stepIdx = Math.min(stepIdx + 1, loadingSteps.length - 1);
+    progress = Math.min(progress + 9, 90);
+    document.getElementById('loadingStep').textContent = loadingSteps[stepIdx];
+    document.getElementById('loadingBar').style.width = progress + '%';
+  }, 2200);
+
+  const market = document.getElementById('market').value.trim();
+  const timeline = document.getElementById('timeline').value.trim();
+  const awardName = document.getElementById('awardName').value;
+  const category = document.getElementById('category').value.trim();
+  const mustInclude = document.getElementById('mustInclude').value.trim();
+  const avoidMention = document.getElementById('avoidMention').value.trim();
+  const keyMessages = document.getElementById('keyMessages').value.trim();
+
+  // Compile documents
+  let docsText = '';
+  const docLabels = { golive: 'Go-Live Report', biz: 'Business Report', pca: 'Post-Campaign Analysis', creative: 'Creative Brief' };
+  for (const [key, val] of Object.entries(fileContents)) {
+    docsText += `\n\n=== ${docLabels[key] || key}: ${val.name} ===\n${val.content.substring(0, 9000)}`;
+  }
+  if (additionalContext) docsText += `\n\n=== Additional Context & Data ===\n${additionalContext}`;
+
+  // Category guidance
+  const catLower = category.toLowerCase();
+  let categoryGuidance = '';
+  if (catLower.includes('ai') || catLower.includes('intelligence') || catLower.includes('automat') || catLower.includes('machine')) {
+    categoryGuidance = 'CATEGORY TYPE — AI/Automation: Emphasise intelligent systems, multi-agent logic, automation at scale, predictive decision-making. Use precise, confident technical language. Make the AI feel transformative, not just efficient.';
+  } else if (catLower.includes('ctv') || catLower.includes('connected tv') || catLower.includes('streaming') || catLower.includes('ott')) {
+    categoryGuidance = 'CATEGORY TYPE — CTV/Connected TV: Emphasise screen context, viewing moments, brand-safe environments, attention quality, premium placement precision. Highlight how context drove impact.';
+  } else if (catLower.includes('perform') || catLower.includes('data') || catLower.includes('programmat') || catLower.includes('roas') || catLower.includes('roi')) {
+    categoryGuidance = 'CATEGORY TYPE — Performance/Data: Lead with measurable outcomes. Show the clear chain from insight → strategy → execution → ROI. Every creative and media decision should feel mathematically justified.';
+  } else if (catLower.includes('brand') || catLower.includes('awareness') || catLower.includes('emotion')) {
+    categoryGuidance = 'CATEGORY TYPE — Brand/Awareness: Balance emotional resonance with data proof. Humanise the brand story while grounding it in real consumer behavioural shifts and brand metric uplifts.';
+  } else if (catLower.includes('social') || catLower.includes('influencer') || catLower.includes('community')) {
+    categoryGuidance = 'CATEGORY TYPE — Social/Influencer: Emphasise cultural relevance, community participation, organic amplification. Show how the campaign moved from paid to earned.';
+  } else if (catLower.includes('innovat') || catLower.includes('tech') || catLower.includes('first')) {
+    categoryGuidance = 'CATEGORY TYPE — Innovation/Technology: Make the innovation feel inevitable in hindsight but bold at the time. Emphasise what had never been done before and why it mattered.';
+  }
+
+  // Region guidance
+  let regionGuidance = '';
+  if (selectedRegion === 'MENA') {
+    regionGuidance = 'REGION — MENA: Write with slightly more narrative depth and cultural context. Allow the story to breathe. MENA juries appreciate context, the human dimension of campaigns, and local market truth.';
+  } else if (selectedRegion === 'APAC') {
+    regionGuidance = 'REGION — APAC: Be concise, structured, and precise. APAC juries respond to clarity, sharp data, and logical progression from challenge to result. Avoid over-explaining.';
+  } else if (selectedRegion === 'Global') {
+    regionGuidance = 'REGION — Global: Strike a balance between narrative warmth and data precision. Must feel universal while remaining grounded in local market truth. Avoid jargon.';
+  } else if (selectedRegion === 'EMEA') {
+    regionGuidance = 'REGION — EMEA: Balance storytelling with rigour. European juries respect craft and strategic thinking. Make the insight feel culturally intelligent.';
+  } else {
+    regionGuidance = 'REGION — North America: Lead with business impact and cultural relevance. Juries expect both ambition and accountability. Data should feel like a punchline, not a footnote.';
+  }
+
+  const systemPrompt = `You are one of the world's most awarded case film scriptwriters — the person agencies call when they need to win at Cannes Lions, Effie Awards, DRUM, Dubai Lynx, or Spikes Asia. Your scripts are known for being jury-friendly, data-grounded, and narratively compelling.
+
+YOUR WRITING STANDARDS:
+VO (Voiceover):
+- Smooth, conversational, human — written to be heard, not read
+- Professional yet warm — never stiff or corporate
+- Clean transitions between sections — each section flows into the next
+- No clichés: avoid "in a world where", "we set out to", "cutting-edge", "game-changing", "unprecedented"
+- No excessive punctuation, no forced drama
+- Each VO section: 2-4 sentences, complete thought
+
+TOS (Text on Screen):
+- Short, punchy, screen-ready fragments — NOT full sentences
+- Maximum 6 words per line
+- 2-4 lines per section
+- Key stats, ideas, hooks — the visual punctuation of the script
+- Written in ALL CAPS or Title Case for drama
+
+CRITICAL RULES:
+1. NEVER hallucinate statistics or data. Only use figures from the provided documents.
+2. If a metric is missing, write [X%], [metric], or [figure] — never invent numbers.
+3. Follow MUST INCLUDE instructions exactly.
+4. Avoid everything in the AVOID list.
+5. Return ONLY valid JSON — no preamble, no markdown fences.
+
+${categoryGuidance}
+${regionGuidance}
+
+STRICT OUTPUT FORMAT — Return ONLY this JSON object:
+{
+  "title": "Brief evocative script title (Brand: Campaign Name format)",
+  "logline": "One sentence that captures the campaign's essence",
+  "sections": [
+    {
+      "id": 1,
+      "title": "Section Name",
+      "vo": "Full voiceover text written to be spoken aloud...",
+      "tos": ["TOS LINE ONE", "TOS LINE TWO", "TOS LINE THREE"],
+      "visual": "Optional: brief visual direction for the filmmaker"
+    }
+  ]
+}
+
+REQUIRED SECTIONS (in order):
+1. Opening / Hook — Grab the jury in 10 seconds
+2. Challenge / Market Context — The problem that needed solving
+3. Brand / Product Introduction — Who is this brand and why does it matter here
+4. Insight — The human truth that unlocked the strategy
+5. Strategy / Solution — What did we decide to do and why
+6. Execution — How it came to life (platform-specific if relevant)
+7. Technology / Innovation — The technical or creative innovation
+8. Results (Media Metrics) — Reach, engagement, performance numbers
+9. Business Impact — Sales, revenue, brand equity, market share
+10. Closing Statement — The lasting truth of this campaign
+
+If a section is not supported by documents, keep it concise but include it with [placeholders] for any missing data.`;
+
+  const userPrompt = `Generate the complete award case film script.
+
+CAMPAIGN:
+- Brand: ${brand}
+- Campaign: ${campaign}
+- Market/Region: ${market || 'Not specified'}
+- Timeline: ${timeline || 'Not specified'}
+
+AWARD:
+- Award: ${awardName || 'Not specified'}
+- Category: ${category || 'General'}
+- Region: ${selectedRegion}
+
+CUSTOM INSTRUCTIONS:
+${mustInclude ? `MUST INCLUDE: ${mustInclude}` : ''}
+${avoidMention ? `AVOID: ${avoidMention}` : ''}
+${keyMessages ? `KEY MESSAGING: ${keyMessages}` : ''}
+
+DOCUMENTS & DATA:
+${docsText || 'No documents uploaded. Generate the script structure with [placeholder] values for all data points and metrics.'}
+
+Generate all 10 sections now. Return ONLY the JSON.`;
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-opus-4-5',
+        max_tokens: 4000,
+        system: systemPrompt,
+        messages: [{ role: 'user', content: userPrompt }]
+      })
+    });
+
+    clearInterval(stepInterval);
+    document.getElementById('loadingBar').style.width = '100%';
+
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.error?.message || `API error ${response.status}`);
+    }
+
+    const data = await response.json();
+    const rawText = (data.content || []).map(b => b.text || '').join('');
+
+    let parsed;
+    try {
+      const clean = rawText.replace(/```json|```/g, '').trim();
+      parsed = JSON.parse(clean);
+    } catch {
+      const match = rawText.match(/\{[\s\S]*\}/);
+      if (match) { try { parsed = JSON.parse(match[0]); } catch { throw new Error('Could not parse the generated script. Please try again.'); } }
+      else throw new Error('Unexpected response format. Please try again.');
+    }
+
+    setTimeout(() => {
+      ls.classList.remove('active');
+      renderOutput(parsed, { brand, campaign, awardName, category, market, timeline });
+      setStep(4);
+    }, 500);
+
+  } catch (err) {
+    clearInterval(stepInterval);
+    ls.classList.remove('active');
+    setStep(1);
+    showError('Error: ' + err.message + (err.message.includes('401') ? ' — Check your API key.' : ''));
+  }
+}
+
+function renderOutput(data, meta) {
+  document.getElementById('formView').style.display = 'none';
+  document.getElementById('outputSection').classList.add('active');
+  document.getElementById('stepIndicator').style.display = 'none';
+
+  document.getElementById('outputTitle').textContent = data.title || `${meta.brand} — ${meta.campaign}`;
+
+  const tags = document.getElementById('metaTags');
+  tags.innerHTML = '';
+  if (meta.awardName) tags.innerHTML += `<span class="meta-tag">${meta.awardName}</span>`;
+  if (meta.category) tags.innerHTML += `<span class="meta-tag">${meta.category}</span>`;
+  if (meta.market) tags.innerHTML += `<span class="meta-tag">${meta.market}</span>`;
+  tags.innerHTML += `<span class="meta-tag">${selectedRegion}</span>`;
+
+  if (data.logline) {
+    tags.innerHTML += `<span style="display:block;width:100%;margin-top:8px;font-size:14px;font-style:italic;color:var(--ink-muted);font-family:'Cormorant Garamond',serif;">"${data.logline}"</span>`;
+  }
+
+  const out = document.getElementById('scriptOutput');
+  out.innerHTML = '';
+
+  (data.sections || []).forEach((sec, i) => {
+    const tosLines = (sec.tos || []).map(l => `<span class="tos-line">${l}</span>`).join('');
+    const block = document.createElement('div');
+    block.className = 'script-block';
+    block.innerHTML = `
+      <div class="script-block-header">
+        <div class="block-num">${String(sec.id || i + 1).padStart(2, '0')}</div>
+        <div class="block-title">${sec.title || 'Section'}</div>
+      </div>
+      <table class="script-table">
+        <thead>
+          <tr>
+            <th>VO — Voiceover</th>
+            <th>TOS — Text on Screen</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>${sec.vo || ''}</td>
+            <td class="tos-cell">${tosLines}</td>
+          </tr>
+        </tbody>
+      </table>
+      ${sec.visual ? `<div class="visual-cue">${sec.visual}</div>` : ''}
+    `;
+    out.appendChild(block);
+  });
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function copyScript() {
+  const title = document.getElementById('outputTitle').textContent;
+  const blocks = document.querySelectorAll('.script-block');
+  let text = `${title}\n${'═'.repeat(title.length)}\n\n`;
+
+  blocks.forEach(b => {
+    const secTitle = b.querySelector('.block-title').textContent;
+    const num = b.querySelector('.block-num').textContent;
+    const vo = b.querySelector('td:first-child').textContent.trim();
+    const tosLines = Array.from(b.querySelectorAll('.tos-line')).map(x => x.textContent.trim());
+    const visual = b.querySelector('.visual-cue');
+
+    text += `[${num}] ${secTitle}\n`;
+    text += `${'─'.repeat(40)}\n`;
+    text += `VO:\n${vo}\n\n`;
+    text += `TOS:\n${tosLines.join('\n')}\n`;
+    if (visual) text += `\nVISUAL: ${visual.textContent.replace('⬡','').trim()}\n`;
+    text += '\n';
+  });
+
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copyBtn');
+    btn.textContent = '✓ Copied!';
+    setTimeout(() => btn.textContent = 'Copy All', 2500);
+  }).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select(); document.execCommand('copy');
+    document.body.removeChild(ta);
+    const btn = document.getElementById('copyBtn');
+    btn.textContent = '✓ Copied!';
+    setTimeout(() => btn.textContent = 'Copy All', 2500);
+  });
+}
+
+function printScript() { window.print(); }
+
+function resetForm() {
+  document.getElementById('outputSection').classList.remove('active');
+  document.getElementById('formView').style.display = 'block';
+  document.getElementById('stepIndicator').style.display = 'flex';
+  document.getElementById('scriptOutput').innerHTML = '';
+  document.getElementById('metaTags').innerHTML = '';
+  setStep(1);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function showError(msg) {
+  const el = document.getElementById('errorToast');
+  el.textContent = msg;
+  el.classList.add('active');
+  el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function hideError() {
+  document.getElementById('errorToast').classList.remove('active');
+}
+</script>
+
+</body>
+</html>
